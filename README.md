@@ -112,6 +112,13 @@ features/
   modelos utilizados pela aplicação.
 - **DTOs:** representam os contratos de entrada e saída da API, evitando expor
   diretamente os modelos internos.
+- **Validação de entrada:** utiliza Jakarta Bean Validation nos DTOs para regras
+  simples e uma annotation customizada `@ValidLicensePlate` para validação dos
+  formatos de placa.
+- **Validação de placa:** as expressões regulares dos formatos antigo e Mercosul
+  são compiladas como constantes estáticas no validator.
+- **Header de origem:** `x-origin` é representado pelo enum `CaptureOrigin`,
+  restringindo os valores aceitos a `FIXED`, `MOBILE` e `HANDHELD`.
 - **Regras de negócio no service:** cálculos de tolerância, percentual de excesso
   e classificação da infração permanecem no `ViolationService`.
 - **Repository Pattern:** o acesso aos dados é definido através de uma abstração,
@@ -203,6 +210,11 @@ Os valores aceitos para `x-origin` são:
 - `MOBILE`
 - `HANDHELD`
 
+Formatos de placa aceitos:
+
+- Antigo: `ABC1234`
+- Mercosul: `ABC1D23`
+
 ### Exemplo com infração
 
 ```bash
@@ -286,9 +298,13 @@ A URL base utilizada no ambiente local é:
 
 ## Tests
 
-O projeto possui testes unitários para regras de negócio e persistência em
-memória, além de testes de integração do endpoint
-`POST /api/v1/violations/evaluate` utilizando Spring Boot e MockMvc.
+O projeto possui testes unitários para regras de negócio, persistência em memória
+e expressões regulares de validação de placa.
+
+Também possui testes de integração do endpoint
+`POST /api/v1/violations/evaluate` utilizando Spring Boot e MockMvc, cobrindo
+cenários de sucesso e entradas inválidas, como placas, velocidades, equipamento,
+timestamp e header `x-origin`.
 
 Para executar todos os testes:
 

@@ -1,0 +1,102 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: speed-violation-service
+meta:
+  id: wrk_e6d213fb2c7444a1865b64ce67d6b00a
+  created: 1786554233141
+  modified: 1786554233141
+  description: ""
+collection:
+  - name: Violations
+    meta:
+      id: fld_21e288e235cb49e69d150fd0bc26bfc6
+      created: 1786554260714
+      modified: 1786554260714
+      sortKey: -1786554260714
+      description: ""
+    children:
+      - url: "{{base_url}}/api/v1/violations/evaluate"
+        name: Evaluate - With Violation
+        meta:
+          id: req_7e624204f9f246e883411c2e2fe2da07
+          created: 1786554285965
+          modified: 1786559302104
+          isPrivate: false
+          description: ""
+          sortKey: -1786554285965
+        method: POST
+        body:
+          mimeType: application/json
+          text: |2-
+             {     
+            	 "licensePlate": "ABC1D23",     
+            	 "measuredSpeed": 92,     
+            	 "speedLimit": 60,     
+            	 "equipmentId": "RAD-CWB-001",     
+            	 "captureTimestamp": "2026-06-08T14:30:00Z"     
+             } 
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: x-origin
+            value: FIXED
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url}}/api/v1/violations/evaluate"
+        name: Evaluate - Without Violation
+        meta:
+          id: req_e8fa22fcd3424daba1ad9154ee635311
+          created: 1786559005381
+          modified: 1786559311317
+          isPrivate: false
+          description: ""
+          sortKey: -1786554285865
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "licensePlate": "ABC1D23",
+              "measuredSpeed": 64,
+              "speedLimit": 60,
+              "equipmentId": "RAD-CWB-001",
+              "captureTimestamp": "2026-06-08T14:30:00Z"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: x-origin
+            value: FIXED
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_110407e9ac92cf9eb62f72c020bb2082f5948489
+    created: 1786554233147
+    modified: 1786554233147
+environments:
+  name: Base Environment
+  meta:
+    id: env_110407e9ac92cf9eb62f72c020bb2082f5948489
+    created: 1786554233144
+    modified: 1786559184797
+    isPrivate: false
+  data:
+    base_url: http://localhost:8080

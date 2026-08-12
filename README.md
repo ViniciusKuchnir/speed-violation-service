@@ -33,8 +33,9 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
   - Endpoint `POST /api/v1/violations/evaluate`.
   - Receber a leitura e retornar o resultado da apuração.
 
-- 🕒 **RF2 — Validação de entrada**
+- ✅ **RF2 — Validação de entrada**
   - Validar placa, velocidades, equipamento, timestamp e header `x-origin`.
+  - Retornar `400 Bad Request` para entradas inválidas.
 
 - ✅ **RF3 — Regras de apuração**
   - Aplicar margem de tolerância.
@@ -45,11 +46,13 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
   - Armazenar somente infrações em memória considerando acesso concorrente.
   - Consultar infrações por placa através de `GET /api/v1/violations`.
 
-- 🕒 **RF5 — Tratamento de erros**
+- ✅ **RF5 — Tratamento de erros**
   - Padronizar respostas de erro.
-  - Centralizar exceções e registrar logs adequadamente.
+  - Centralizar o tratamento de exceções.
+  - Registrar logs de validação e erros inesperados.
+  - Não expor detalhes internos da aplicação ao cliente.
 
-- 🕒 **RF6 — Casos especiais**
+- ✅ **RF6 — Casos especiais**
   - Tratar corretamente margens de tolerância, formatos de placa,
     limites de 20% e 50%, vias acima de 100 km/h e timestamps futuros.
 
@@ -95,6 +98,7 @@ features/
 └── violation/
     ├── controller/
     ├── dto/
+    ├── exception/
     ├── model/
     ├── provider/
     ├── repository/
@@ -119,6 +123,10 @@ features/
   são compiladas como constantes estáticas no validator.
 - **Header de origem:** `x-origin` é representado pelo enum `CaptureOrigin`,
   restringindo os valores aceitos a `FIXED`, `MOBILE` e `HANDHELD`.
+- **Tratamento centralizado de erros:** utiliza `@RestControllerAdvice` para
+  padronizar respostas de validação e falhas inesperadas.
+- **Respostas de erro seguras:** detalhes internos e stack traces permanecem nos
+  logs da aplicação e não são enviados ao cliente.
 - **Regras de negócio no service:** cálculos de tolerância, percentual de excesso
   e classificação da infração permanecem no `ViolationService`.
 - **Repository Pattern:** o acesso aos dados é definido através de uma abstração,
@@ -280,6 +288,34 @@ Exemplo de resposta:
 }
 ```
 
+### Exemplo de erro de validação
+
+```bash
+curl -X POST http://localhost:8080/api/v1/violations/evaluate \
+  -H "Content-Type: application/json" \
+  -H "x-origin: FIXED" \
+  -d '{
+    "licensePlate": "ABC1AA9",
+    "measuredSpeed": 92,
+    "speedLimit": 60,
+    "equipmentId": "RAD-CWB-001",
+    "captureTimestamp": "2026-06-08T14:30:00Z"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "error": "INVALID_LICENSE_PLATE",
+  "message": "Invalid license plate format",
+  "timestamp": "2026-08-12T22:00:00Z"
+}
+```
+
+Erros inesperados retornam `500 Internal Server Error` com mensagem genérica,
+sem exposição de stack trace ou detalhes internos da aplicação.
+
 ---
 ## API Collection
 
@@ -302,9 +338,13 @@ O projeto possui testes unitários para regras de negócio, persistência em mem
 e expressões regulares de validação de placa.
 
 Também possui testes de integração do endpoint
-`POST /api/v1/violations/evaluate` utilizando Spring Boot e MockMvc, cobrindo
-cenários de sucesso e entradas inválidas, como placas, velocidades, equipamento,
-timestamp e header `x-origin`.
+`POST /api/v1/violations/evaluate` utilizando Spring Boot e MockMvc, cobrindo:
+
+- cenários com e sem infração;
+- validações de placa, velocidades, equipamento e timestamp;
+- validação do header `x-origin`;
+- respostas de erro padronizadas;
+- erros inesperados `500` sem exposição de detalhes internos.
 
 Para executar todos os testes:
 

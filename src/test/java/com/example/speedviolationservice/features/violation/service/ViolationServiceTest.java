@@ -117,9 +117,11 @@ public class ViolationServiceTest {
         var result = service.evaluate(64, 60);
 
         assertThat(result.hasViolation()).isFalse();
+
         assertThat(result.excessPercentage())
                 .isEqualByComparingTo("0.00");
-        assertThat(result.severity()).isNull();
+
+        assertThat(result.violation()).isNull();
     }
 
     @Test
@@ -132,8 +134,11 @@ public class ViolationServiceTest {
 
         assertThat(result.hasViolation()).isTrue();
 
-        assertThat(result.severity())
+        assertThat(result.violation().severity())
                 .isEqualTo(ViolationSeverity.MEDIUM);
+
+        assertThat(result.violation().ctbCode())
+                .isEqualTo("218-I");
     }
 
     @Test
@@ -146,8 +151,11 @@ public class ViolationServiceTest {
 
         assertThat(result.hasViolation()).isTrue();
 
-        assertThat(result.severity())
+        assertThat(result.violation().severity())
                 .isEqualTo(ViolationSeverity.SERIOUS);
+
+        assertThat(result.violation().ctbCode())
+                .isEqualTo("218-II");
     }
 
     @Test
@@ -158,8 +166,13 @@ public class ViolationServiceTest {
         assertThat(result.excessPercentage())
                 .isEqualByComparingTo("50.00");
 
-        assertThat(result.severity())
+        assertThat(result.hasViolation()).isTrue();
+
+        assertThat(result.violation().severity())
                 .isEqualTo(ViolationSeverity.SERIOUS);
+
+        assertThat(result.violation().ctbCode())
+                .isEqualTo("218-II");
     }
 
     @Test
@@ -170,8 +183,13 @@ public class ViolationServiceTest {
         assertThat(result.excessPercentage())
                 .isEqualByComparingTo("52.00");
 
-        assertThat(result.severity())
+        assertThat(result.hasViolation()).isTrue();
+
+        assertThat(result.violation().severity())
                 .isEqualTo(ViolationSeverity.VERY_SERIOUS);
+
+        assertThat(result.violation().ctbCode())
+                .isEqualTo("218-III");
     }
 
 

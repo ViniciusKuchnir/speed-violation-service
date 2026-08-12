@@ -1,6 +1,7 @@
 package com.example.speedviolationservice.features.violation.service;
 
 import com.example.speedviolationservice.config.ViolationProperties;
+import com.example.speedviolationservice.features.violation.model.Violation;
 import com.example.speedviolationservice.features.violation.model.ViolationEvaluation;
 import com.example.speedviolationservice.features.violation.model.ViolationSeverity;
 import org.springframework.stereotype.Service;
@@ -28,17 +29,18 @@ public class ViolationService {
 
         boolean hasViolation = consideredSpeed > speedLimit;
 
-        ViolationSeverity severity = null;
+        Violation violation = null;
 
         if (hasViolation) {
-            severity = this.classifyViolation(excessPercentage);
+            ViolationSeverity severity = this.classifyViolation(excessPercentage);
+            violation = new Violation(severity);
         }
 
         return new ViolationEvaluation(
                 consideredSpeed,
                 excessPercentage,
                 hasViolation,
-                severity
+                violation
         );
     }
 

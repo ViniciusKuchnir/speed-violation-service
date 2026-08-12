@@ -6,6 +6,6 @@ public record ViolationEvaluation(
         int consideredSpeed,
         BigDecimal excessPercentage,
         boolean hasViolation,
-        ViolationSeverity severity
+        Violation violation
 ) {
 }

@@ -1,15 +1,33 @@
 package com.example.speedviolationservice.features.violation.service;
 
 import com.example.speedviolationservice.config.ViolationProperties;
+import com.example.speedviolationservice.features.violation.model.SpeedReading;
+import com.example.speedviolationservice.features.violation.model.ViolationOrigin;
 import com.example.speedviolationservice.features.violation.model.ViolationSeverity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ViolationServiceTest {
 
     private ViolationService service;
+
+    private SpeedReading createReading(
+            int measuredSpeed,
+            int speedLimit
+    ) {
+        return new SpeedReading(
+                "ABC1D23",
+                measuredSpeed,
+                speedLimit,
+                "RAD-CWB-001",
+                Instant.parse("2026-06-08T14:30:00Z"),
+                ViolationOrigin.FIXED
+        );
+    }
 
     @BeforeEach
     void setUp() {
@@ -34,8 +52,10 @@ public class ViolationServiceTest {
         var customService =
                 new ViolationService(properties);
 
+        var reading = createReading(92, 60);
+
         var result =
-                customService.evaluate(92, 60);
+                customService.evaluate(reading);
 
         assertThat(result.consideredSpeed())
                 .isEqualTo(87);
@@ -44,7 +64,9 @@ public class ViolationServiceTest {
     @Test
     void shouldApplyFixedToleranceWhenSpeedLimitIsAtMost100() {
 
-        var result =  service.evaluate(92, 60);
+        var reading = createReading(92, 60);
+
+        var result =  service.evaluate(reading);
 
         assertThat(result.consideredSpeed()).isEqualTo(85);
     }
@@ -52,7 +74,9 @@ public class ViolationServiceTest {
     @Test
     void shouldApplyPercentageToleranceWhenSpeedLimitIsAbove100() {
 
-        var result = service.evaluate(130, 110);
+        var reading = createReading(130, 110);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.consideredSpeed()).isEqualTo(120);
     }
@@ -60,7 +84,9 @@ public class ViolationServiceTest {
     @Test
     void shouldApplyFixedToleranceWhenSpeedLimitIsEqualTo100(){
 
-        var result = service.evaluate(92, 100);
+        var reading = createReading(92, 100);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.consideredSpeed()).isEqualTo(85);
     }
@@ -68,7 +94,9 @@ public class ViolationServiceTest {
     @Test
     void shouldReturnZeroExcessPercentageWhenConsideredSpeedIsBelowLimit() {
 
-        var result = service.evaluate(66, 60);
+        var reading = createReading(66, 60);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.consideredSpeed()).isEqualTo(59);
         assertThat(result.excessPercentage()).isEqualByComparingTo("0.00");
@@ -77,7 +105,9 @@ public class ViolationServiceTest {
     @Test
     void shouldReturnZeroExcessPercentageWhenConsideredSpeedEqualsLimit() {
 
-        var result = service.evaluate(67, 60);
+        var reading = createReading(67, 60);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.consideredSpeed()).isEqualTo(60);
         assertThat(result.excessPercentage()).isEqualByComparingTo("0.00");
@@ -86,7 +116,9 @@ public class ViolationServiceTest {
     @Test
     void shouldCalculateExcessPercentageWhenConsideredSpeedExceedsLimit() {
 
-        var result = service.evaluate(67, 50);
+        var reading = createReading(67, 50);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.consideredSpeed()).isEqualTo(60);
         assertThat(result.excessPercentage()).isEqualByComparingTo("20.00");
@@ -95,7 +127,9 @@ public class ViolationServiceTest {
     @Test
     void shouldRoundExcessPercentageToTwoDecimalPlaces() {
 
-        var result = service.evaluate(92, 60);
+        var reading = createReading(92, 60);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.consideredSpeed()).isEqualTo(85);
         assertThat(result.excessPercentage()).isEqualByComparingTo("41.67");
@@ -104,7 +138,9 @@ public class ViolationServiceTest {
     @Test
     void shouldCalculateExcessPercentageUsingConsideredSpeed() {
 
-        var result = service.evaluate(130, 110);
+        var reading = createReading(130, 110);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.consideredSpeed()).isEqualTo(120);
         assertThat(result.excessPercentage())
@@ -114,7 +150,9 @@ public class ViolationServiceTest {
     @Test
     void shouldReturnNullSeverityWhenThereIsNoViolation() {
 
-        var result = service.evaluate(64, 60);
+        var reading = createReading(64, 60);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.hasViolation()).isFalse();
 
@@ -127,7 +165,9 @@ public class ViolationServiceTest {
     @Test
     void shouldClassifyAsMediumWhenExcessIsExactly20Percent() {
 
-        var result = service.evaluate(67, 50);
+        var reading = createReading(67, 50);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.excessPercentage())
                 .isEqualByComparingTo("20.00");
@@ -144,7 +184,9 @@ public class ViolationServiceTest {
     @Test
     void shouldClassifyAsSeriousWhenExcessIsAbove20Percent() {
 
-        var result = service.evaluate(68, 50);
+        var reading = createReading(68, 50);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.excessPercentage())
                 .isEqualByComparingTo("22.00");
@@ -161,7 +203,9 @@ public class ViolationServiceTest {
     @Test
     void shouldClassifyAsSeriousWhenExcessIsExactly50Percent() {
 
-        var result = service.evaluate(82, 50);
+        var reading = createReading(82, 50);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.excessPercentage())
                 .isEqualByComparingTo("50.00");
@@ -178,7 +222,9 @@ public class ViolationServiceTest {
     @Test
     void shouldClassifyAsVerySeriousWhenExcessIsAbove50Percent() {
 
-        var result = service.evaluate(83, 50);
+        var reading = createReading(83, 50);
+
+        var result = service.evaluate(reading);
 
         assertThat(result.excessPercentage())
                 .isEqualByComparingTo("52.00");

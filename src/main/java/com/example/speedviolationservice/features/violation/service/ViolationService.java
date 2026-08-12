@@ -1,6 +1,7 @@
 package com.example.speedviolationservice.features.violation.service;
 
 import com.example.speedviolationservice.config.ViolationProperties;
+import com.example.speedviolationservice.features.violation.model.SpeedReading;
 import com.example.speedviolationservice.features.violation.model.Violation;
 import com.example.speedviolationservice.features.violation.model.ViolationEvaluation;
 import com.example.speedviolationservice.features.violation.model.ViolationSeverity;
@@ -18,16 +19,16 @@ public class ViolationService {
         this.properties = properties;
     }
 
-    public ViolationEvaluation evaluate(
-            int measuredSpeed,
-            int speedLimit
-    ) {
+    public ViolationEvaluation evaluate(SpeedReading reading) {
 
-        int consideredSpeed = this.calculateConsideredSpeed(measuredSpeed, speedLimit);
+        int consideredSpeed = this.calculateConsideredSpeed(
+                reading.measuredSpeed(),
+                reading.speedLimit()
+        );
 
-        BigDecimal excessPercentage = this.calculateExcessPercentage(consideredSpeed, speedLimit);
+        BigDecimal excessPercentage = this.calculateExcessPercentage(consideredSpeed, reading.speedLimit());
 
-        boolean hasViolation = consideredSpeed > speedLimit;
+        boolean hasViolation = consideredSpeed > reading.speedLimit();
 
         Violation violation = null;
 
@@ -37,7 +38,11 @@ public class ViolationService {
         }
 
         return new ViolationEvaluation(
+                reading.licensePlate(),
+                reading.equipmentId(),
+                reading.measuredSpeed(),
                 consideredSpeed,
+                reading.speedLimit(),
                 excessPercentage,
                 hasViolation,
                 violation

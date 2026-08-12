@@ -57,7 +57,7 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 - 🕒 **RNF1 — Organização do código**
     - Separar responsabilidades e documentar as decisões arquiteturais.
 
-- 🕒 **RNF2 — Configuração externalizada**
+- ✅ **RNF2 — Configuração externalizada**
     - Externalizar porta e parâmetros das margens de tolerância.
 
 - 🕒 **RNF3 — Testes**
@@ -115,7 +115,27 @@ features/
   excesso para evitar imprecisões de ponto flutuante.
 - **Classificação tipada:** a severidade da infração é representada por
   `ViolationSeverity`, evitando valores de classificação espalhados como strings.
+- **Configuração externalizada:** parâmetros operacionais são mantidos fora da
+  regra de negócio através do `application.properties`, permitindo alteração sem
+  modificar o código da aplicação.
 - **Desenvolvimento orientado a testes:** o projeto utiliza TDD como apoio ao desenvolvimento, priorizando testes de comportamento e regras de negócio antes da implementação das funcionalidades.
+
+---
+## Configuração
+
+As configurações operacionais da aplicação são definidas em
+`application.properties`.
+
+| Propriedade | Valor padrão |
+|---|---:|
+| `server.port` | `8080` |
+| `violation.tolerance.fixed-kmh` | `7` |
+| `violation.tolerance.percentage` | `7` |
+| `violation.tolerance.percentage-threshold` | `100` |
+
+Os valores podem ser sobrescritos por variáveis de ambiente, permitindo ajustar
+a configuração entre diferentes ambientes sem alterar o código-fonte.
+
 ---
 
 ## Running the application

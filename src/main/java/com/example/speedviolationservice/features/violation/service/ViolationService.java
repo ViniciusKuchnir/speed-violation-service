@@ -1,12 +1,21 @@
 package com.example.speedviolationservice.features.violation.service;
 
+import com.example.speedviolationservice.config.ViolationProperties;
 import com.example.speedviolationservice.features.violation.model.ViolationEvaluation;
 import com.example.speedviolationservice.features.violation.model.ViolationSeverity;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+@Service
 public class ViolationService {
+
+    private final ViolationProperties properties;
+
+    public ViolationService(ViolationProperties properties) {
+        this.properties = properties;
+    }
 
     public ViolationEvaluation evaluate(
             int measuredSpeed,
@@ -34,15 +43,20 @@ public class ViolationService {
     }
 
     private int calculateConsideredSpeed(int measuredSpeed, int speedLimit) {
-        int consideredSpeed;
 
-        if (speedLimit <= 100) {
-            consideredSpeed = measuredSpeed - 7;
-        }else {
-            consideredSpeed = (int) (measuredSpeed * 0.93); // 0.93 = -7%
+        if (speedLimit <= properties.percentageTreshold()) {
+            return measuredSpeed - properties.fixedKmh();
         }
 
-        return consideredSpeed;
+        BigDecimal tolerance = BigDecimal
+                .valueOf(measuredSpeed)
+                .multiply(BigDecimal.valueOf(properties.percentage()))
+                .movePointLeft(2);
+
+        return BigDecimal
+                .valueOf(measuredSpeed)
+                .subtract(tolerance)
+                .intValue();
     }
 
     private BigDecimal calculateExcessPercentage(

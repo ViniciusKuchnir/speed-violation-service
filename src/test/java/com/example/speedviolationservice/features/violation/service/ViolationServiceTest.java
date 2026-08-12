@@ -1,5 +1,6 @@
 package com.example.speedviolationservice.features.violation.service;
 
+import com.example.speedviolationservice.config.ViolationProperties;
 import com.example.speedviolationservice.features.violation.model.ViolationSeverity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,32 @@ public class ViolationServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new ViolationService();
+        var properties = new ViolationProperties(
+                7,
+                7,
+                100
+        );
+
+        service = new ViolationService(properties);
+    }
+
+    @Test
+    void shouldUseConfiguredFixedTolerance() {
+
+        var properties = new ViolationProperties(
+                5,
+                7,
+                100
+        );
+
+        var customService =
+                new ViolationService(properties);
+
+        var result =
+                customService.evaluate(92, 60);
+
+        assertThat(result.consideredSpeed())
+                .isEqualTo(87);
     }
 
     @Test

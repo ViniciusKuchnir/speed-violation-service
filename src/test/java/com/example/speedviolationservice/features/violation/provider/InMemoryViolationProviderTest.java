@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +28,8 @@ public class InMemoryViolationProviderTest {
                 60,
                 new BigDecimal("41.67"),
                 true,
-                new Violation(ViolationSeverity.SERIOUS)
+                new Violation(ViolationSeverity.SERIOUS),
+                Instant.now()
         );
     }
 

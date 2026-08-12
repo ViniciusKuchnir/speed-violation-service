@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -52,7 +53,8 @@ public class ViolationService {
                 reading.speedLimit(),
                 excessPercentage,
                 hasViolation,
-                violation
+                violation,
+                Instant.now()
         );
 
         if (hasViolation) {

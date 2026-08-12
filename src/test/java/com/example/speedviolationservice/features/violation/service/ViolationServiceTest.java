@@ -41,7 +41,8 @@ public class ViolationServiceTest {
                 60,
                 new BigDecimal("41.67"),
                 true,
-                new Violation(ViolationSeverity.SERIOUS)
+                new Violation(ViolationSeverity.SERIOUS),
+                Instant.now()
         );
     }
 

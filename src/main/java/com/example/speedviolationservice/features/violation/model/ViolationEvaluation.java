@@ -1,6 +1,7 @@
 package com.example.speedviolationservice.features.violation.model;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public record ViolationEvaluation(
         String licensePlate,
@@ -10,6 +11,7 @@ public record ViolationEvaluation(
         int speedLimit,
         BigDecimal excessPercentage,
         boolean hasViolation,
-        Violation violation
+        Violation violation,
+        Instant processedAt
 ) {
 }

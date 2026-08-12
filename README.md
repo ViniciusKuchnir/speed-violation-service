@@ -41,7 +41,7 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
     - Classificar a infração como `MEDIUM`, `SERIOUS` ou `VERY_SERIOUS`.
 
 - 🕒 **RF4 — Persistência e consulta**
-    - Armazenar infrações em memória considerando acesso concorrente.
+    - Armazenar somente infrações em memória considerando acesso concorrente.
     - Consultar infrações por placa através de `GET /api/v1/violations`.
 
 - 🕒 **RF5 — Tratamento de erros**
@@ -95,6 +95,7 @@ features/
     ├── controller/
     ├── dto/
     ├── model/
+    ├── provider/
     ├── repository/
     ├── service/
     └── validator/

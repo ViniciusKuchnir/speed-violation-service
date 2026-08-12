@@ -6,6 +6,7 @@ import com.example.speedviolationservice.features.violation.dto.ViolationRespons
 import com.example.speedviolationservice.features.violation.model.SpeedReading;
 import com.example.speedviolationservice.features.violation.model.ViolationOrigin;
 import com.example.speedviolationservice.features.violation.service.ViolationService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class ViolationController {
     @PostMapping("/evaluate")
     public ResponseEntity<EvaluateViolationResponse> evaluate(
             @RequestHeader("x-origin")ViolationOrigin origin,
-            @RequestBody EvaluateViolationRequest request
+            @Valid @RequestBody EvaluateViolationRequest request
     ) {
         var reading = new SpeedReading(
                 request.licensePlate(),

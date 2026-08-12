@@ -1,14 +1,14 @@
 package com.example.speedviolationservice.features.violation.service;
 
 import com.example.speedviolationservice.config.ViolationProperties;
-import com.example.speedviolationservice.features.violation.model.SpeedReading;
-import com.example.speedviolationservice.features.violation.model.ViolationOrigin;
-import com.example.speedviolationservice.features.violation.model.ViolationSeverity;
+import com.example.speedviolationservice.features.violation.model.*;
 import com.example.speedviolationservice.features.violation.repository.ViolationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -29,6 +29,19 @@ public class ViolationServiceTest {
                 "RAD-CWB-001",
                 Instant.parse("2026-06-08T14:30:00Z"),
                 ViolationOrigin.FIXED
+        );
+    }
+
+    private ViolationEvaluation createViolationEvaluation(String licensePlate) {
+        return new ViolationEvaluation(
+                licensePlate,
+                "RAD-CWB-001",
+                92,
+                85,
+                60,
+                new BigDecimal("41.67"),
+                true,
+                new Violation(ViolationSeverity.SERIOUS)
         );
     }
 
@@ -261,6 +274,41 @@ public class ViolationServiceTest {
         service.evaluate(reading);
 
         verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldFindViolationsByLicensePlate() {
+        String licensePlate = "ABC1D23";
+
+        var expectedViolations = List.of(
+                createViolationEvaluation(licensePlate)
+        );
+
+        when(repository.findByLicensePlate(licensePlate))
+                .thenReturn(expectedViolations);
+
+        var result = service.findByLicensePlate(licensePlate);
+
+        assertThat(result)
+                .isEqualTo(expectedViolations);
+
+        verify(repository)
+                .findByLicensePlate(licensePlate);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoViolationsAreFound() {
+        String licensePlate = "ABC1D23";
+
+        when(repository.findByLicensePlate(licensePlate))
+                .thenReturn(List.of());
+
+        var result = service.findByLicensePlate(licensePlate);
+
+        assertThat(result).isEmpty();
+
+        verify(repository)
+                .findByLicensePlate(licensePlate);
     }
 
 }

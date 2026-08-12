@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 @Service
 public class ViolationService {
@@ -59,6 +60,10 @@ public class ViolationService {
         }
 
         return evaluation;
+    }
+
+    public List<ViolationEvaluation> findByLicensePlate(String licensePlate) {
+        return violationRepository.findByLicensePlate(licensePlate);
     }
 
     private int calculateConsideredSpeed(int measuredSpeed, int speedLimit) {

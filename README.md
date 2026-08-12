@@ -109,6 +109,13 @@ features/
 - **Regras de negócio no service:** cálculos de tolerância, percentual de excesso
   e classificação da infração ficam no `ViolationService`. Validators ficam
   reservados para validações de entrada.
+- **Repository Pattern:** o acesso aos dados é definido através de uma abstração,
+    evitando que a regra de negócio dependa diretamente da forma como os dados são armazenados.
+- **Provider de persistência:** a implementação atual utiliza um provider em memória
+  para atender ao armazenamento solicitado. Novos providers, como uma implementação
+  com banco de dados, podem ser adicionados futuramente sem alterar o contrato do repository.
+- **Acesso concorrente:** o armazenamento em memória utiliza estruturas concorrentes
+  para suportar múltiplos acessos de forma segura.
 - **Modelos simples e imutáveis:** Records são utilizados quando apropriado para
   representar os dados da apuração.
 - **Precisão no percentual:** `BigDecimal` é utilizado no cálculo do percentual de

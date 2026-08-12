@@ -5,6 +5,7 @@ import com.example.speedviolationservice.features.violation.model.SpeedReading;
 import com.example.speedviolationservice.features.violation.model.Violation;
 import com.example.speedviolationservice.features.violation.model.ViolationEvaluation;
 import com.example.speedviolationservice.features.violation.model.ViolationSeverity;
+import com.example.speedviolationservice.features.violation.repository.ViolationRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,9 +15,14 @@ import java.math.RoundingMode;
 public class ViolationService {
 
     private final ViolationProperties properties;
+    private final ViolationRepository violationRepository;
 
-    public ViolationService(ViolationProperties properties) {
+    public ViolationService(
+            ViolationProperties properties,
+            ViolationRepository violationRepository
+    ) {
         this.properties = properties;
+        this.violationRepository = violationRepository;
     }
 
     public ViolationEvaluation evaluate(SpeedReading reading) {
@@ -37,7 +43,7 @@ public class ViolationService {
             violation = new Violation(severity);
         }
 
-        return new ViolationEvaluation(
+        ViolationEvaluation evaluation =  new ViolationEvaluation(
                 reading.licensePlate(),
                 reading.equipmentId(),
                 reading.measuredSpeed(),
@@ -47,6 +53,12 @@ public class ViolationService {
                 hasViolation,
                 violation
         );
+
+        if (hasViolation) {
+            violationRepository.save(evaluation);
+        }
+
+        return evaluation;
     }
 
     private int calculateConsideredSpeed(int measuredSpeed, int speedLimit) {

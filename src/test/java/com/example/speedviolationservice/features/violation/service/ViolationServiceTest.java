@@ -4,16 +4,19 @@ import com.example.speedviolationservice.config.ViolationProperties;
 import com.example.speedviolationservice.features.violation.model.SpeedReading;
 import com.example.speedviolationservice.features.violation.model.ViolationOrigin;
 import com.example.speedviolationservice.features.violation.model.ViolationSeverity;
+import com.example.speedviolationservice.features.violation.repository.ViolationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class ViolationServiceTest {
 
     private ViolationService service;
+    private ViolationRepository repository;
 
     private SpeedReading createReading(
             int measuredSpeed,
@@ -37,7 +40,9 @@ public class ViolationServiceTest {
                 100
         );
 
-        service = new ViolationService(properties);
+        repository = mock(ViolationRepository.class);
+
+        service = new ViolationService(properties, repository);
     }
 
     @Test
@@ -49,8 +54,10 @@ public class ViolationServiceTest {
                 100
         );
 
+        repository = mock(ViolationRepository.class);
+
         var customService =
-                new ViolationService(properties);
+                new ViolationService(properties, repository);
 
         var reading = createReading(92, 60);
 
@@ -238,6 +245,22 @@ public class ViolationServiceTest {
                 .isEqualTo("218-III");
     }
 
+    @Test
+    void shouldPersistEvaluationWhenViolationOccurs() {
+        var reading = createReading(92, 60);
 
+        var result = service.evaluate(reading);
+
+        verify(repository).save(result);
+    }
+
+    @Test
+    void shouldNotPersistEvaluationWhenThereIsNoViolation() {
+        var reading = createReading(64, 60);
+
+        service.evaluate(reading);
+
+        verify(repository, never()).save(any());
+    }
 
 }

@@ -70,7 +70,7 @@ public class ViolationService {
 
     private int calculateConsideredSpeed(int measuredSpeed, int speedLimit) {
 
-        if (speedLimit <= properties.percentageTreshold()) {
+        if (speedLimit <= properties.percentageThreshold()) {
             return measuredSpeed - properties.fixedKmh();
         }
 

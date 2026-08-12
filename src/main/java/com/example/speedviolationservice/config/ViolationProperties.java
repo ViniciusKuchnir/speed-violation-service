@@ -6,6 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record ViolationProperties(
         int fixedKmh,
         int percentage,
-        int percentageTreshold
+        int percentageThreshold
 ) {
 }

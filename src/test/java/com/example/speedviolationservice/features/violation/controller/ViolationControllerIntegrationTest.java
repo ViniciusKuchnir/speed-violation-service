@@ -94,7 +94,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_LICENSE_PLATE"))
+                .andExpect(jsonPath("$.message").value("Invalid license plate format"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -113,7 +118,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_LICENSE_PLATE"))
+                .andExpect(jsonPath("$.message").value("License plate is required"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -131,7 +141,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_LICENSE_PLATE"))
+                .andExpect(jsonPath("$.message").value("License plate is required"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -150,7 +165,13 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_MEASURED_SPEED"))
+                .andExpect(jsonPath("$.message")
+                        .value("Measured speed must be greater than zero"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -169,7 +190,13 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_MEASURED_SPEED"))
+                .andExpect(jsonPath("$.message")
+                        .value("Measured speed must be greater than zero"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -187,7 +214,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_MEASURED_SPEED"))
+                .andExpect(jsonPath("$.message").value("Measured speed is required"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -206,7 +238,13 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_SPEED_LIMIT"))
+                .andExpect(jsonPath("$.message")
+                        .value("Speed limit must be greater than zero"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -225,7 +263,13 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_SPEED_LIMIT"))
+                .andExpect(jsonPath("$.message")
+                        .value("Speed limit must be greater than zero"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -243,7 +287,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_SPEED_LIMIT"))
+                .andExpect(jsonPath("$.message").value("Speed limit is required"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -262,7 +311,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_EQUIPMENT_ID"))
+                .andExpect(jsonPath("$.message").value("Equipment ID is required"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -280,7 +334,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_EQUIPMENT_ID"))
+                .andExpect(jsonPath("$.message").value("Equipment ID is required"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -299,7 +358,13 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_CAPTURE_TIMESTAMP"))
+                .andExpect(jsonPath("$.message")
+                        .value("Capture timestamp must not be in the future"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -318,7 +383,13 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_REQUEST"))
+                .andExpect(jsonPath("$.message")
+                        .value("Invalid request body or field format"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -336,7 +407,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "FIXED")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_CAPTURE_TIMESTAMP"))
+                .andExpect(jsonPath("$.message").value("Capture timestamp is required"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -354,7 +430,12 @@ public class ViolationControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/violations/evaluate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_X_ORIGIN"))
+                .andExpect(jsonPath("$.message").value("x-origin header is required"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -373,7 +454,13 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "INVALID")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_X_ORIGIN"))
+                .andExpect(jsonPath("$.message")
+                        .value("x-origin must be one of FIXED, MOBILE or HANDHELD"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -392,7 +479,12 @@ public class ViolationControllerIntegrationTest {
                         .header("x-origin", "fixed")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("INVALID_X_ORIGIN"))
+                .andExpect(jsonPath("$.message")
+                        .value("x-origin must be one of FIXED, MOBILE or HANDHELD"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
-
 }

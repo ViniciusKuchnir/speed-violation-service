@@ -11,6 +11,7 @@ Microserviço REST responsável por processar leituras de velocidade captadas po
 - Maven
 - JUnit 5
 - AssertJ
+- MockMvc
 
 ---
 ## Requisitos do projeto
@@ -28,47 +29,47 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 
 ### Requisitos Funcionais
 
-- 🕒 **RF1 — Apuração de velocidade**
-    - Endpoint `POST /api/v1/violations/evaluate`
-    - Receber a leitura e retornar o resultado da apuração.
+- ✅ **RF1 — Apuração de velocidade**
+  - Endpoint `POST /api/v1/violations/evaluate`.
+  - Receber a leitura e retornar o resultado da apuração.
 
 - 🕒 **RF2 — Validação de entrada**
-    - Validar placa, velocidades, equipamento, timestamp e header `x-origin`.
+  - Validar placa, velocidades, equipamento, timestamp e header `x-origin`.
 
 - ✅ **RF3 — Regras de apuração**
-    - Aplicar margem de tolerância.
-    - Calcular percentual de excesso.
-    - Classificar a infração como `MEDIUM`, `SERIOUS` ou `VERY_SERIOUS`.
+  - Aplicar margem de tolerância.
+  - Calcular percentual de excesso.
+  - Classificar a infração como `MEDIUM`, `SERIOUS` ou `VERY_SERIOUS`.
 
 - 🕒 **RF4 — Persistência e consulta**
-    - Armazenar somente infrações em memória considerando acesso concorrente.
-    - Consultar infrações por placa através de `GET /api/v1/violations`.
+  - Armazenar somente infrações em memória considerando acesso concorrente.
+  - Consultar infrações por placa através de `GET /api/v1/violations`.
 
 - 🕒 **RF5 — Tratamento de erros**
-    - Padronizar respostas de erro.
-    - Centralizar exceções e registrar logs adequadamente.
+  - Padronizar respostas de erro.
+  - Centralizar exceções e registrar logs adequadamente.
 
 - 🕒 **RF6 — Casos especiais**
-    - Tratar corretamente margens de tolerância, formatos de placa,
-      limites de 20% e 50%, vias acima de 100 km/h e timestamps futuros.
+  - Tratar corretamente margens de tolerância, formatos de placa,
+    limites de 20% e 50%, vias acima de 100 km/h e timestamps futuros.
 
 ### Requisitos Não Funcionais
 
 - 🕒 **RNF1 — Organização do código**
-    - Separar responsabilidades e documentar as decisões arquiteturais.
+  - Separar responsabilidades e documentar as decisões arquiteturais.
 
 - ✅ **RNF2 — Configuração externalizada**
-    - Externalizar porta e parâmetros das margens de tolerância.
+  - Externalizar porta e parâmetros das margens de tolerância.
 
 - 🕒 **RNF3 — Testes**
-    - Testar regras de negócio, validações e casos de fronteira.
-    - Manter cobertura mínima de 80% da camada de negócio.
+  - Testar regras de negócio, validações e casos de fronteira.
+  - Manter cobertura mínima de 80% da camada de negócio.
 
 - 🕒 **RNF4 — Documentação**
-    - Documentar execução, testes, exemplos de uso e decisões técnicas.
+  - Documentar execução, testes, exemplos de uso e decisões técnicas.
 
 - 🕒 **RNF5 — Qualidade de código**
-    - Utilizar Java 21, código limpo, Records quando apropriado e boas práticas.
+  - Utilizar Java 21, código limpo, Records quando apropriado e boas práticas.
 
 ### Diferenciais
 
@@ -104,29 +105,32 @@ features/
 ### Decisões arquiteturais
 
 - **Package by feature:** mantém os componentes relacionados à infração agrupados
-  em `features/violation`, facilitando a navegação, a manutenção do código e possíveis novos módulos futuros.
-- **Arquitetura em camadas:** `controller`, `service` e `repository` possuem
-  responsabilidades distintas, evitando concentrar toda a lógica em uma única camada.
+  em `features/violation`, facilitando manutenção e evolução.
+- **Arquitetura em camadas:** controller, service, repository e provider possuem
+  responsabilidades distintas.
+- **Controller:** responsável pelo contrato HTTP e pela conversão entre DTOs e
+  modelos utilizados pela aplicação.
+- **DTOs:** representam os contratos de entrada e saída da API, evitando expor
+  diretamente os modelos internos.
 - **Regras de negócio no service:** cálculos de tolerância, percentual de excesso
-  e classificação da infração ficam no `ViolationService`. Validators ficam
-  reservados para validações de entrada.
+  e classificação da infração permanecem no `ViolationService`.
 - **Repository Pattern:** o acesso aos dados é definido através de uma abstração,
-    evitando que a regra de negócio dependa diretamente da forma como os dados são armazenados.
-- **Provider de persistência:** a implementação atual utiliza um provider em memória
-  para atender ao armazenamento solicitado. Novos providers, como uma implementação
-  com banco de dados, podem ser adicionados futuramente sem alterar o contrato do repository.
+  evitando dependência direta do mecanismo de armazenamento.
+- **Provider de persistência:** a implementação atual utiliza armazenamento em
+  memória e pode ser substituída por outro provider sem alterar o contrato do repository.
+- **Persistência condicionada:** somente avaliações que resultam em infração são
+  enviadas ao repository.
 - **Acesso concorrente:** o armazenamento em memória utiliza estruturas concorrentes
   para suportar múltiplos acessos de forma segura.
-- **Modelos simples e imutáveis:** Records são utilizados quando apropriado para
-  representar os dados da apuração.
-- **Precisão no percentual:** `BigDecimal` é utilizado no cálculo do percentual de
-  excesso para evitar imprecisões de ponto flutuante.
+- **Modelos imutáveis:** Records são utilizados quando apropriado.
+- **Precisão no percentual:** `BigDecimal` é utilizado para evitar imprecisões de
+  ponto flutuante.
 - **Classificação tipada:** a severidade da infração é representada por
-  `ViolationSeverity`, evitando valores de classificação espalhados como strings.
-- **Configuração externalizada:** parâmetros operacionais são mantidos fora da
-  regra de negócio através do `application.properties`, permitindo alteração sem
-  modificar o código da aplicação.
-- **Desenvolvimento orientado a testes:** o projeto utiliza TDD como apoio ao desenvolvimento, priorizando testes de comportamento e regras de negócio antes da implementação das funcionalidades.
+  `ViolationSeverity`.
+- **Configuração externalizada:** parâmetros operacionais são definidos através
+  do `application.properties`.
+- **Desenvolvimento orientado a testes:** o projeto utiliza TDD como apoio ao
+  desenvolvimento das regras e funcionalidades.
 
 ---
 ## Configuração
@@ -134,25 +138,159 @@ features/
 As configurações operacionais da aplicação são definidas em
 `application.properties`.
 
-| Propriedade | Valor padrão |
-|---|---:|
-| `server.port` | `8080` |
-| `violation.tolerance.fixed-kmh` | `7` |
-| `violation.tolerance.percentage` | `7` |
-| `violation.tolerance.percentage-threshold` | `100` |
+| Propriedade                                | Valor padrão |
+| ------------------------------------------ | -----------: |
+| `server.port`                              |       `8080` |
+| `violation.tolerance.fixed-kmh`            |          `7` |
+| `violation.tolerance.percentage`           |          `7` |
+| `violation.tolerance.percentage-threshold` |        `100` |
 
 Os valores podem ser sobrescritos por variáveis de ambiente, permitindo ajustar
-a configuração entre diferentes ambientes sem alterar o código-fonte.
+a aplicação entre diferentes ambientes sem alterar o código-fonte.
+
+---
+
+## Pré-requisitos
+
+Para executar o projeto localmente é necessário:
+
+- Java 21
+- Git
 
 ---
 
 ## Running the application
 
-Documentation in progress.
+Clone o repositório e acesse o diretório do projeto.
+
+No Windows:
+
+```bash
+.\mvnw.cmd spring-boot:run
+```
+
+No Linux/macOS:
+
+```bash
+./mvnw spring-boot:run
+```
+
+Por padrão, a aplicação estará disponível em:
+
+`http://localhost:8080`
+
+A porta pode ser alterada através da variável de ambiente `SERVER_PORT`.
+
+---
+
+## API
+
+### Avaliar velocidade
+
+```http
+POST /api/v1/violations/evaluate
+```
+
+Header obrigatório:
+
+```text
+x-origin: FIXED
+```
+
+Os valores aceitos para `x-origin` são:
+
+- `FIXED`
+- `MOBILE`
+- `HANDHELD`
+
+### Exemplo com infração
+
+```bash
+curl -X POST http://localhost:8080/api/v1/violations/evaluate \
+  -H "Content-Type: application/json" \
+  -H "x-origin: FIXED" \
+  -d '{
+    "licensePlate": "ABC1D23",
+    "measuredSpeed": 92,
+    "speedLimit": 60,
+    "equipmentId": "RAD-CWB-001",
+    "captureTimestamp": "2026-06-08T14:30:00Z"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "licensePlate": "ABC1D23",
+  "equipmentId": "RAD-CWB-001",
+  "measuredSpeed": 92,
+  "consideredSpeed": 85,
+  "speedLimit": 60,
+  "excessPercentage": 41.67,
+  "hasViolation": true,
+  "violation": {
+    "severity": "SERIOUS",
+    "ctbCode": "218-II"
+  },
+  "processedAt": "2026-06-08T14:30:05Z"
+}
+```
+
+### Exemplo sem infração
+
+```bash
+curl -X POST http://localhost:8080/api/v1/violations/evaluate \
+  -H "Content-Type: application/json" \
+  -H "x-origin: FIXED" \
+  -d '{
+    "licensePlate": "ABC1D23",
+    "measuredSpeed": 64,
+    "speedLimit": 60,
+    "equipmentId": "RAD-CWB-001",
+    "captureTimestamp": "2026-06-08T14:30:00Z"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "licensePlate": "ABC1D23",
+  "equipmentId": "RAD-CWB-001",
+  "measuredSpeed": 64,
+  "consideredSpeed": 57,
+  "speedLimit": 60,
+  "excessPercentage": 0.00,
+  "hasViolation": false,
+  "violation": null,
+  "processedAt": "2026-06-08T14:30:05Z"
+}
+```
+
+---
+## API Collection
+
+Uma collection do Insomnia está disponível em:
+
+`insomnia/speed-violation-service.yaml`
+
+Atualmente, a collection contém exemplos para o endpoint
+`POST /api/v1/violations/evaluate`, incluindo cenários com e sem infração.
+
+A URL base utilizada no ambiente local é:
+
+`http://localhost:8080`
+
+---
 
 ## Tests
 
-Para executar os testes:
+O projeto possui testes unitários para regras de negócio e persistência em
+memória, além de testes de integração do endpoint
+`POST /api/v1/violations/evaluate` utilizando Spring Boot e MockMvc.
+
+Para executar todos os testes:
 
 No Windows:
 

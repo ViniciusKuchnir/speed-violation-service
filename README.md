@@ -770,12 +770,27 @@ Todos os requisitos definidos para a implementação foram concluídos.
 ## Future Improvements
 
 A implementação atual foi mantida intencionalmente compatível com o escopo do
-desafio.
+desafio. Em uma evolução do projeto, alguns pontos de processo, documentação e
+arquitetura poderiam ser aprofundados conforme a necessidade e o comportamento
+observado da aplicação.
 
-Em um cenário real de produção, decisões relacionadas à escalabilidade e à
-arquitetura deveriam ser tomadas a partir do comportamento observado da
-aplicação e de métricas concretas, evitando adicionar complexidade sem uma
-necessidade comprovada.
+### Requirements Refinement
+
+Por se tratar de um desafio técnico desenvolvido em um período limitado, os
+requisitos foram utilizados diretamente como referência para a implementação.
+
+Em uma evolução do projeto, eu refinaria alguns requisitos em itens menores e
+mais objetivos, facilitando o acompanhamento incremental do desenvolvimento e
+a associação entre requisito, implementação e teste.
+
+Por exemplo, a validação de entrada poderia ser dividida em requisitos específicos
+para placa, velocidades, equipamento, timestamp e origem da leitura, em vez de
+ser acompanhada como um único requisito.
+
+Também definiria critérios de aceitação mais explícitos para os principais
+comportamentos e casos de fronteira. Isso tornaria mais simples verificar quando
+cada requisito foi realmente concluído e garantir que exista um teste automatizado
+correspondente aos comportamentos mais importantes.
 
 ### Load Testing
 

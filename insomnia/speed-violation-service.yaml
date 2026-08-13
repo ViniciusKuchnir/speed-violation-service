@@ -154,6 +154,24 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: "{{base_url}}/actuator/health"
+        name: Health
+        meta:
+          id: req_11bf56eee8fd4c1b923bdb3796d7d51a
+          created: 1786623357843
+          modified: 1786627159250
+          isPrivate: false
+          description: ""
+          sortKey: -1786623357843
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:

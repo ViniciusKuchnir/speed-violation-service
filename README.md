@@ -593,6 +593,123 @@ válida.
 
 ---
 
+## Future Improvements
+
+A implementação atual foi mantida intencionalmente compatível com o escopo do
+desafio. Em um cenário real de produção, decisões relacionadas a escalabilidade
+e arquitetura deveriam ser tomadas com base no comportamento observado da
+aplicação e em métricas de utilização.
+
+### Load Testing
+
+Antes de introduzir mudanças arquiteturais voltadas à escalabilidade, seriam
+realizados testes de carga para compreender o comportamento da aplicação sob
+diferentes volumes de requisições.
+
+Esses testes permitiriam avaliar principalmente o throughput das avaliações de
+velocidade, o tempo de resposta dos endpoints, o comportamento da aplicação em
+picos de utilização e possíveis gargalos.
+
+Também permitiriam validar uma hipótese derivada do próprio domínio: o volume de
+avaliações de velocidade pode ser significativamente superior ao volume de
+consultas por placa, já que cada passagem de um veículo por um equipamento pode
+originar uma avaliação, enquanto consultas tendem a ocorrer com menor frequência.
+
+Essa hipótese não é assumida como uma característica garantida do sistema. Os
+resultados dos testes de carga e, posteriormente, métricas reais de produção
+seriam utilizados como evidência para orientar decisões de arquitetura.
+
+### CQRS
+
+Caso os testes de carga e as métricas de produção confirmassem uma diferença
+significativa entre os padrões de escrita e leitura, uma possível evolução seria
+a adoção de CQRS (Command Query Responsibility Segregation).
+
+Nesse cenário:
+
+`POST /api/v1/violations/evaluate`
+
+representaria o fluxo de comandos, responsável pelo processamento das avaliações
+e registro das infrações.
+
+Enquanto:
+
+`GET /api/v1/violations`
+
+representaria o fluxo de consultas.
+
+A separação permitiria que os caminhos de escrita e leitura fossem evoluídos,
+otimizados e escalados de forma independente caso apresentassem necessidades
+operacionais diferentes.
+
+CQRS não foi aplicado na implementação atual porque não existem métricas que
+demonstrem essa necessidade. Introduzir o padrão antecipadamente adicionaria
+complexidade sem uma evidência concreta de benefício.
+
+A decisão, portanto, partiria primeiro de uma hipótese baseada no domínio,
+seguida por testes de carga e, em um ambiente real, métricas de produção.
+
+### Idempotency
+
+Em um ambiente real, equipamentos de fiscalização ou serviços responsáveis pelo
+envio das leituras podem repetir uma requisição em situações como timeout,
+instabilidade de rede ou mecanismos automáticos de retry.
+
+Sem controle de idempotência, uma mesma captura poderia ser processada mais de
+uma vez e potencialmente gerar registros duplicados de uma mesma infração.
+
+Uma evolução da API seria associar cada captura a um identificador único. Dessa
+forma, o serviço poderia reconhecer uma avaliação já processada e impedir que a
+mesma leitura produzisse uma nova infração em caso de reenvio.
+
+Essa característica se tornaria ainda mais importante caso a aplicação evoluísse
+para processamento distribuído ou assíncrono, onde duplicidade de mensagens e
+reprocessamentos devem ser considerados como parte do funcionamento do sistema.
+
+---
+
+## Commit Convention
+
+O histórico do projeto foi organizado utilizando commits pequenos e focados em
+uma única responsabilidade.
+
+As mensagens seguem um padrão inspirado em **Conventional Commits**:
+
+```text
+<type>: <description>
+```
+
+Os principais tipos utilizados no projeto são:
+
+| Tipo       | Utilização |
+| ---------- | ---------- |
+| `feat`     | Implementação de novas funcionalidades |
+| `test`     | Criação ou alteração de testes |
+| `refactor` | Alterações estruturais sem mudança de comportamento |
+| `build`    | Configurações relacionadas ao build, dependências ou Docker |
+| `ci`       | Configurações de integração contínua |
+| `docs`     | Alterações de documentação, OpenAPI ou collections da API |
+
+As descrições são mantidas curtas, em inglês e identificam diretamente a
+responsabilidade da alteração.
+
+Exemplos do padrão utilizado:
+
+```text
+feat: add violation query endpoint
+test: add violation query integration tests
+refactor: reuse violation response mapper
+build: add Docker image configuration
+ci: add build and test workflow
+docs: document hosted application
+```
+
+A separação dos commits por responsabilidade facilita a revisão do histórico,
+a identificação das decisões tomadas durante o desenvolvimento e a análise
+isolada de cada alteração.
+
+---
+
 ## Tests
 
 O projeto possui testes unitários para regras de negócio, persistência em memória
@@ -619,9 +736,9 @@ o projeto.
 
 Evidência da execução atual:
 
-| Escopo             | Cobertura de linhas  | Cobertura de branches |
-| ------------------ | --------------------: | ---------------------: |
-| `ViolationService` |          100% (46/46) |           100% (14/14) |
+| Escopo             | Cobertura de linhas | Cobertura de branches |
+| ------------------ | -------------------: | ---------------------: |
+| `ViolationService` |         100% (46/46) |           100% (14/14) |
 | Projeto completo   |       97,9% (184/188) |            90,9% (40/44) |
 
 O build falha caso a cobertura de linhas da camada de negócio fique abaixo de

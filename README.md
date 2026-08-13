@@ -13,6 +13,7 @@ Microserviço REST responsável por processar leituras de velocidade captadas po
 - AssertJ
 - MockMvc
 - JaCoCo
+- Springdoc OpenAPI / Swagger UI
 
 ---
 ## Requisitos do projeto
@@ -71,15 +72,16 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
   - Manter cobertura mínima de 80% da camada de negócio.
   - Validar automaticamente a cobertura através do JaCoCo.
 
-- 🕒 **RNF4 — Documentação**
+- ✅ **RNF4 — Documentação**
   - Documentar execução, testes, exemplos de uso e decisões técnicas.
+  - Disponibilizar documentação interativa da API através de OpenAPI.
 
 - 🕒 **RNF5 — Qualidade de código**
   - Utilizar Java 21, código limpo, Records quando apropriado e boas práticas.
 
 ### Diferenciais
 
-- 🕒 Swagger / OpenAPI
+- ✅ Swagger / OpenAPI
 - 🕒 Dockerfile
 - ✅ Testes de integração
 - ✅ Collection Postman / Insomnia
@@ -154,6 +156,8 @@ features/
   desenvolvimento das regras e funcionalidades.
 - **Cobertura automatizada:** o JaCoCo verifica a cobertura da camada de negócio
   durante a fase `verify` do Maven.
+- **Documentação OpenAPI:** contratos, parâmetros, schemas e respostas da API são
+  documentados através do Springdoc OpenAPI e disponibilizados pelo Swagger UI.
 
 ---
 ## Configuração
@@ -364,6 +368,33 @@ Exemplo de resposta:
 
 Erros inesperados retornam `500 Internal Server Error` com mensagem genérica,
 sem exposição de stack trace ou detalhes internos da aplicação.
+
+---
+## OpenAPI / Swagger
+
+A API possui documentação OpenAPI gerada através do Springdoc e uma interface
+interativa disponibilizada pelo Swagger UI.
+
+Com a aplicação em execução, a documentação pode ser acessada em:
+
+| Recurso | URL |
+| ------- | --- |
+| Swagger UI | `http://localhost:8080/swagger-ui.html` |
+| OpenAPI JSON | `http://localhost:8080/v3/api-docs` |
+
+A documentação descreve:
+
+- `POST /api/v1/violations/evaluate`;
+- `GET /api/v1/violations`;
+- header obrigatório `x-origin`;
+- parâmetros de entrada;
+- schemas de request e response;
+- valores aceitos para enums;
+- respostas `200`, `400` e `500`;
+- formato padronizado das respostas de erro.
+
+O Swagger UI também permite executar os endpoints diretamente pela interface
+durante a execução local da aplicação.
 
 ---
 ## API Collection

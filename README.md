@@ -15,6 +15,7 @@ Microserviço REST responsável por processar leituras de velocidade captadas po
 - JaCoCo
 - Springdoc OpenAPI / Swagger UI
 - Docker
+- GitHub Actions
 
 ---
 ## Requisitos do projeto
@@ -62,7 +63,7 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 
 ### Requisitos Não Funcionais
 
-- 🕒 **RNF1 — Organização do código**
+- ✅ **RNF1 — Organização do código**
   - Separar responsabilidades e documentar as decisões arquiteturais.
 
 - ✅ **RNF2 — Configuração externalizada**
@@ -77,7 +78,7 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
   - Documentar execução, testes, exemplos de uso e decisões técnicas.
   - Disponibilizar documentação interativa da API através de OpenAPI.
 
-- 🕒 **RNF5 — Qualidade de código**
+- ✅ **RNF5 — Qualidade de código**
   - Utilizar Java 21, código limpo, Records quando apropriado e boas práticas.
 
 ### Diferenciais
@@ -86,7 +87,7 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 - ✅ Dockerfile
 - ✅ Testes de integração
 - ✅ Collection Postman / Insomnia
-- 🕒 Pipeline CI
+- ✅ Pipeline CI
 - 🕒 Aplicação hospedada
 
 ---
@@ -161,6 +162,8 @@ features/
   documentados através do Springdoc OpenAPI e disponibilizados pelo Swagger UI.
 - **Containerização:** a aplicação utiliza Docker com multi-stage build em Java 21,
   separando o ambiente de compilação da imagem utilizada em execução.
+- **Integração contínua:** o GitHub Actions executa automaticamente build, testes,
+  validação de cobertura e build da imagem Docker em pushes e pull requests.
 
 ---
 ## Configuração
@@ -490,6 +493,33 @@ A collection contém exemplos para:
 A URL base utilizada no ambiente local é:
 
 `http://localhost:8080`
+
+---
+## Continuous Integration
+
+O projeto utiliza GitHub Actions para executar automaticamente o processo de
+integração contínua em pushes e pull requests.
+
+O workflow está definido em:
+
+`.github/workflows/ci.yml`
+
+O pipeline utiliza um runner Linux e executa as seguintes etapas:
+
+1. checkout do repositório;
+2. configuração do Java 21;
+3. configuração do Maven Wrapper;
+4. execução do `mvn clean verify`;
+5. execução dos testes automatizados;
+6. validação da cobertura mínima através do JaCoCo;
+7. build da imagem Docker.
+
+A execução é considerada bem-sucedida somente quando todas as etapas são
+concluídas sem erros.
+
+O processo garante que alterações integradas ao repositório continuem
+compilando, atendam à cobertura mínima de testes e mantenham uma imagem Docker
+válida.
 
 ---
 

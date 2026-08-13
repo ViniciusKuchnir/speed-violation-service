@@ -1,4 +1,11 @@
 package com.example.speedviolationservice.features.violation.dto;
 
-public record FindViolationsRequest() {
+import com.example.speedviolationservice.features.violation.validator.ValidLicensePlate;
+import jakarta.validation.constraints.NotBlank;
+
+public record FindViolationsRequest(
+        @NotBlank(message = "License plate is required")
+        @ValidLicensePlate
+        String licensePlate
+) {
 }

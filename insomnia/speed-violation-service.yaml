@@ -20,7 +20,7 @@ collection:
         meta:
           id: req_7e624204f9f246e883411c2e2fe2da07
           created: 1786554285965
-          modified: 1786559302104
+          modified: 1786586236388
           isPrivate: false
           description: ""
           sortKey: -1786554285965
@@ -34,7 +34,7 @@ collection:
             	 "speedLimit": 60,     
             	 "equipmentId": "RAD-CWB-001",     
             	 "captureTimestamp": "2026-06-08T14:30:00Z"     
-             } 
+             }
         headers:
           - name: Content-Type
             value: application/json
@@ -75,6 +75,75 @@ collection:
             value: application/json
           - name: x-origin
             value: FIXED
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url}}/api/v1/violations"
+        name: Find Violations By Plate -  With Violation
+        meta:
+          id: req_a9396610ddd74167a821c16142778652
+          created: 1786585662667
+          modified: 1786586224769
+          isPrivate: false
+          description: ""
+          sortKey: -1786554285765
+        method: GET
+        parameters:
+          - name: licensePlate
+            value: ABC1D23
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url}}/api/v1/violations"
+        name: Find Violations By Plate -  Without Violation
+        meta:
+          id: req_7cec59ee50f84019805cb3346886de31
+          created: 1786586278079
+          modified: 1786586298451
+          isPrivate: false
+          description: ""
+          sortKey: -1786554285715
+        method: GET
+        parameters:
+          - name: licensePlate
+            value: XYZ1A23
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url}}/api/v1/violations"
+        name: Find Violations By Plate -  Invalid License Plate
+        meta:
+          id: req_2f3be1b9a08f4b1f8742404d20a75a7d
+          created: 1786586333282
+          modified: 1786586370726
+          isPrivate: false
+          description: ""
+          sortKey: -1786554285665
+        method: GET
+        parameters:
+          - name: licensePlate
+            value: XYZ1A2A
             description: ""
             disabled: false
         settings:

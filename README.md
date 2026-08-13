@@ -14,6 +14,7 @@ Microserviço REST responsável por processar leituras de velocidade captadas po
 - MockMvc
 - JaCoCo
 - Springdoc OpenAPI / Swagger UI
+- Docker
 
 ---
 ## Requisitos do projeto
@@ -82,7 +83,7 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 ### Diferenciais
 
 - ✅ Swagger / OpenAPI
-- 🕒 Dockerfile
+- ✅ Dockerfile
 - ✅ Testes de integração
 - ✅ Collection Postman / Insomnia
 - 🕒 Pipeline CI
@@ -158,6 +159,8 @@ features/
   durante a fase `verify` do Maven.
 - **Documentação OpenAPI:** contratos, parâmetros, schemas e respostas da API são
   documentados através do Springdoc OpenAPI e disponibilizados pelo Swagger UI.
+- **Containerização:** a aplicação utiliza Docker com multi-stage build em Java 21,
+  separando o ambiente de compilação da imagem utilizada em execução.
 
 ---
 ## Configuração
@@ -184,6 +187,10 @@ Para executar o projeto localmente é necessário:
 - Java 21
 - Git
 
+Para execução via container:
+
+- Docker
+
 ---
 
 ## Running the application
@@ -207,6 +214,74 @@ Por padrão, a aplicação estará disponível em:
 `http://localhost:8080`
 
 A porta pode ser alterada através da variável de ambiente `SERVER_PORT`.
+
+---
+## Docker
+
+A aplicação possui um `Dockerfile` multi-stage utilizando Java 21.
+
+O estágio de build utiliza o Maven Wrapper do projeto para gerar o artefato da
+aplicação, enquanto a imagem final contém apenas o runtime necessário para
+executar o arquivo JAR.
+
+### Build da imagem
+
+Na raiz do projeto:
+
+```bash
+docker build -t speed-violation-service .
+```
+
+### Executar o container
+
+Utilizando a porta padrão `8080`:
+
+```bash
+docker run --name speed-violation-service --rm -p 8080:8080 speed-violation-service
+```
+
+A aplicação estará disponível em:
+
+`http://localhost:8080`
+
+### Alterar a porta
+
+A porta pode ser sobrescrita através da variável de ambiente `SERVER_PORT`.
+
+Exemplo utilizando a porta `9090`:
+
+```bash
+docker run --name speed-violation-service --rm -e SERVER_PORT=9090 -p 9090:9090 speed-violation-service
+```
+
+A aplicação estará disponível em:
+
+`http://localhost:9090`
+
+### Health check
+
+Com a aplicação em execução:
+
+```http
+GET /actuator/health
+```
+
+Exemplo:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+Resposta esperada:
+
+```json
+{
+  "status": "UP"
+}
+```
+
+A persistência da aplicação continua sendo realizada somente em memória.
+Portanto, os registros armazenados são perdidos quando o container é encerrado.
 
 ---
 
@@ -409,7 +484,8 @@ A collection contém exemplos para:
 - avaliação sem infração;
 - consulta de infrações por placa;
 - consulta de placa sem infrações;
-- consulta com placa inválida.
+- consulta com placa inválida;
+- health check da aplicação.
 
 A URL base utilizada no ambiente local é:
 

@@ -12,6 +12,7 @@ Microserviço REST responsável por processar leituras de velocidade captadas po
 - JUnit 5
 - AssertJ
 - MockMvc
+- JaCoCo
 
 ---
 ## Requisitos do projeto
@@ -65,9 +66,10 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 - ✅ **RNF2 — Configuração externalizada**
   - Externalizar porta e parâmetros das margens de tolerância.
 
-- 🕒 **RNF3 — Testes**
+- ✅ **RNF3 — Testes**
   - Testar regras de negócio, validações e casos de fronteira.
   - Manter cobertura mínima de 80% da camada de negócio.
+  - Validar automaticamente a cobertura através do JaCoCo.
 
 - 🕒 **RNF4 — Documentação**
   - Documentar execução, testes, exemplos de uso e decisões técnicas.
@@ -150,6 +152,8 @@ features/
   do `application.properties`.
 - **Desenvolvimento orientado a testes:** o projeto utiliza TDD como apoio ao
   desenvolvimento das regras e funcionalidades.
+- **Cobertura automatizada:** o JaCoCo verifica a cobertura da camada de negócio
+  durante a fase `verify` do Maven.
 
 ---
 ## Configuração
@@ -398,7 +402,25 @@ Também possui testes de integração utilizando Spring Boot e MockMvc, cobrindo
 - retorno de lista vazia quando não existem registros;
 - garantia de que avaliações sem infração não são persistidas.
 
-Para executar todos os testes:
+### Cobertura de testes
+
+A cobertura é analisada através do JaCoCo e validada durante a fase `verify`
+do Maven.
+
+A camada de negócio possui cobertura superior ao mínimo de 80% definido para
+o projeto.
+
+Evidência da execução atual:
+
+| Escopo              | Cobertura de linhas | Cobertura de branches |
+| ------------------- | -------------------: | ---------------------: |
+| `ViolationService`  |     100% (46/46)     |      100% (14/14)      |
+| Projeto completo    |   97,9% (184/188)    |     90,9% (40/44)      |
+
+O build falha caso a cobertura de linhas da camada de negócio fique abaixo de
+80%.
+
+Para executar somente os testes:
 
 No Windows:
 
@@ -411,3 +433,21 @@ No Linux/macOS:
 ```bash
 ./mvnw test
 ```
+
+Para executar os testes e validar a cobertura:
+
+No Windows:
+
+```bash
+.\mvnw.cmd clean verify
+```
+
+No Linux/macOS:
+
+```bash
+./mvnw clean verify
+```
+
+O relatório HTML de cobertura é gerado em:
+
+`target/site/jacoco/index.html`

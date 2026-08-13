@@ -16,6 +16,7 @@ Microserviço REST responsável por processar leituras de velocidade captadas po
 - Springdoc OpenAPI / Swagger UI
 - Docker
 - GitHub Actions
+- Render
 
 ---
 ## Requisitos do projeto
@@ -88,7 +89,7 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 - ✅ Testes de integração
 - ✅ Collection Postman / Insomnia
 - ✅ Pipeline CI
-- 🕒 Aplicação hospedada
+- ✅ Aplicação hospedada
 
 ---
 
@@ -164,6 +165,8 @@ features/
   separando o ambiente de compilação da imagem utilizada em execução.
 - **Integração contínua:** o GitHub Actions executa automaticamente build, testes,
   validação de cobertura e build da imagem Docker em pushes e pull requests.
+- **Deploy:** a aplicação é disponibilizada publicamente através do Render,
+  utilizando a imagem construída a partir do `Dockerfile` do projeto.
 
 ---
 ## Configuração
@@ -275,16 +278,73 @@ Exemplo:
 curl http://localhost:8080/actuator/health
 ```
 
-Resposta esperada:
+Exemplo de resposta:
 
 ```json
 {
-  "status": "UP"
+  "status": "UP",
+  "groups": [
+    "liveness",
+    "readiness"
+  ]
 }
 ```
 
+O campo `status` com valor `UP` indica que a aplicação está disponível.
+
 A persistência da aplicação continua sendo realizada somente em memória.
 Portanto, os registros armazenados são perdidos quando o container é encerrado.
+
+---
+
+## Deployment
+
+A aplicação está hospedada publicamente no **Render** utilizando o `Dockerfile`
+do projeto.
+
+### Ambiente público
+
+| Recurso | URL |
+| ------- | --- |
+| API | `https://speed-violation-service-cgk1.onrender.com` |
+| Swagger UI | `https://speed-violation-service-cgk1.onrender.com/swagger-ui.html` |
+| OpenAPI JSON | `https://speed-violation-service-cgk1.onrender.com/v3/api-docs` |
+| Health Check | `https://speed-violation-service-cgk1.onrender.com/actuator/health` |
+
+O ambiente hospedado utiliza a mesma aplicação containerizada utilizada na
+execução local, com configurações operacionais fornecidas através de variáveis
+de ambiente.
+
+O endpoint utilizado para verificação de saúde da aplicação é:
+
+```http
+GET /actuator/health
+```
+
+Uma aplicação disponível retorna `status` igual a `UP`.
+
+### Observação sobre o ambiente gratuito
+
+A aplicação está hospedada utilizando uma instância gratuita do Render.
+
+Serviços gratuitos podem entrar em estado de inatividade após aproximadamente
+15 minutos sem receber tráfego. Quando isso ocorre, a primeira requisição
+seguinte inicia novamente a instância e pode levar cerca de um minuto para ser
+respondida.
+
+Portanto, caso o primeiro acesso à API ou ao Swagger apresente um tempo de
+resposta maior, aguarde a inicialização da instância e tente novamente.
+
+### Persistência no ambiente hospedado
+
+A persistência exigida pelo projeto é exclusivamente em memória.
+
+Consequentemente, as infrações registradas existem somente durante o ciclo de
+vida da instância atual da aplicação. Reinicializações, novos deploys ou
+recriações da instância resultam em um armazenamento em memória vazio.
+
+Esse comportamento é intencional e segue o requisito de persistência em memória
+definido para o projeto.
 
 ---
 
@@ -453,12 +513,19 @@ sem exposição de stack trace ou detalhes internos da aplicação.
 A API possui documentação OpenAPI gerada através do Springdoc e uma interface
 interativa disponibilizada pelo Swagger UI.
 
-Com a aplicação em execução, a documentação pode ser acessada em:
+### Ambiente local
 
 | Recurso | URL |
 | ------- | --- |
 | Swagger UI | `http://localhost:8080/swagger-ui.html` |
 | OpenAPI JSON | `http://localhost:8080/v3/api-docs` |
+
+### Ambiente hospedado
+
+| Recurso | URL |
+| ------- | --- |
+| Swagger UI | `https://speed-violation-service-cgk1.onrender.com/swagger-ui.html` |
+| OpenAPI JSON | `https://speed-violation-service-cgk1.onrender.com/v3/api-docs` |
 
 A documentação descreve:
 
@@ -471,8 +538,7 @@ A documentação descreve:
 - respostas `200`, `400` e `500`;
 - formato padronizado das respostas de erro.
 
-O Swagger UI também permite executar os endpoints diretamente pela interface
-durante a execução local da aplicação.
+O Swagger UI também permite executar os endpoints diretamente pela interface.
 
 ---
 ## API Collection
@@ -493,6 +559,10 @@ A collection contém exemplos para:
 A URL base utilizada no ambiente local é:
 
 `http://localhost:8080`
+
+Para testar o ambiente hospedado, a URL base pode ser substituída por:
+
+`https://speed-violation-service-cgk1.onrender.com`
 
 ---
 ## Continuous Integration
@@ -549,10 +619,10 @@ o projeto.
 
 Evidência da execução atual:
 
-| Escopo              | Cobertura de linhas | Cobertura de branches |
-| ------------------- | -------------------: | ---------------------: |
-| `ViolationService`  |     100% (46/46)     |      100% (14/14)      |
-| Projeto completo    |   97,9% (184/188)    |     90,9% (40/44)      |
+| Escopo             | Cobertura de linhas  | Cobertura de branches |
+| ------------------ | --------------------: | ---------------------: |
+| `ViolationService` |          100% (46/46) |           100% (14/14) |
+| Projeto completo   |       97,9% (184/188) |            90,9% (40/44) |
 
 O build falha caso a cobertura de linhas da camada de negócio fique abaixo de
 80%.

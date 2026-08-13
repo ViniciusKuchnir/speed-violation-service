@@ -22,10 +22,10 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 
 ### Legenda
 
-| Ícone | Status |
-|:---:|---|
-| ✅ | Concluído |
-| 🕒 | Em andamento |
+| Ícone | Status       |
+| :---: | ------------ |
+|   ✅   | Concluído    |
+|   🕒  | Em andamento |
 
 ### Requisitos Funcionais
 
@@ -42,9 +42,10 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
   - Calcular percentual de excesso.
   - Classificar a infração como `MEDIUM`, `SERIOUS` ou `VERY_SERIOUS`.
 
-- 🕒 **RF4 — Persistência e consulta**
+- ✅ **RF4 — Persistência e consulta**
   - Armazenar somente infrações em memória considerando acesso concorrente.
   - Consultar infrações por placa através de `GET /api/v1/violations`.
+  - Retornar lista vazia quando não houver infrações registradas.
 
 - ✅ **RF5 — Tratamento de erros**
   - Padronizar respostas de erro.
@@ -78,8 +79,8 @@ não funcionais e diferenciais definidos para o `speed-violation-service`.
 
 - 🕒 Swagger / OpenAPI
 - 🕒 Dockerfile
-- 🕒 Testes de integração
-- 🕒 Collection Postman / Insomnia
+- ✅ Testes de integração
+- ✅ Collection Postman / Insomnia
 - 🕒 Pipeline CI
 - 🕒 Aplicação hospedada
 
@@ -99,6 +100,7 @@ features/
     ├── controller/
     ├── dto/
     ├── exception/
+    ├── mapper/
     ├── model/
     ├── provider/
     ├── repository/
@@ -112,17 +114,19 @@ features/
   em `features/violation`, facilitando manutenção e evolução.
 - **Arquitetura em camadas:** controller, service, repository e provider possuem
   responsabilidades distintas.
-- **Controller:** responsável pelo contrato HTTP e pela conversão entre DTOs e
-  modelos utilizados pela aplicação.
+- **Controller:** responsável pelo contrato HTTP e pela orquestração das chamadas
+  à camada de serviço.
 - **DTOs:** representam os contratos de entrada e saída da API, evitando expor
   diretamente os modelos internos.
+- **Mapper:** centraliza a conversão entre modelos internos e DTOs de resposta,
+  evitando duplicação entre endpoints.
 - **Validação de entrada:** utiliza Jakarta Bean Validation nos DTOs para regras
   simples e uma annotation customizada `@ValidLicensePlate` para validação dos
   formatos de placa.
 - **Validação de placa:** as expressões regulares dos formatos antigo e Mercosul
   são compiladas como constantes estáticas no validator.
-- **Header de origem:** `x-origin` é representado pelo enum `CaptureOrigin`,
-  restringindo os valores aceitos a `FIXED`, `MOBILE` e `HANDHELD`.
+- **Header de origem:** `x-origin` é representado por enum, restringindo os valores
+  aceitos a `FIXED`, `MOBILE` e `HANDHELD`.
 - **Tratamento centralizado de erros:** utiliza `@RestControllerAdvice` para
   padronizar respostas de validação e falhas inesperadas.
 - **Respostas de erro seguras:** detalhes internos e stack traces permanecem nos
@@ -288,6 +292,47 @@ Exemplo de resposta:
 }
 ```
 
+### Consultar infrações por placa
+```http
+GET /api/v1/violations?licensePlate=ABC1D23
+```
+
+Exemplo:
+
+```bash
+curl "http://localhost:8080/api/v1/violations?licensePlate=ABC1D23"
+```
+
+Exemplo de resposta:
+
+```json
+[
+  {
+    "licensePlate": "ABC1D23",
+    "equipmentId": "RAD-CWB-001",
+    "measuredSpeed": 92,
+    "consideredSpeed": 85,
+    "speedLimit": 60,
+    "excessPercentage": 41.67,
+    "hasViolation": true,
+    "violation": {
+      "severity": "SERIOUS",
+      "ctbCode": "218-II"
+    },
+    "processedAt": "2026-06-08T14:30:05Z"
+  }
+]
+```
+
+Quando não existem infrações registradas para a placa:
+
+```json
+[]
+```
+
+A persistência é realizada somente em memória. Portanto, os registros são
+removidos quando a aplicação é reiniciada.
+
 ### Exemplo de erro de validação
 
 ```bash
@@ -323,8 +368,13 @@ Uma collection do Insomnia está disponível em:
 
 `insomnia/speed-violation-service.yaml`
 
-Atualmente, a collection contém exemplos para o endpoint
-`POST /api/v1/violations/evaluate`, incluindo cenários com e sem infração.
+A collection contém exemplos para:
+
+- avaliação com infração;
+- avaliação sem infração;
+- consulta de infrações por placa;
+- consulta de placa sem infrações;
+- consulta com placa inválida.
 
 A URL base utilizada no ambiente local é:
 
@@ -337,14 +387,16 @@ A URL base utilizada no ambiente local é:
 O projeto possui testes unitários para regras de negócio, persistência em memória
 e expressões regulares de validação de placa.
 
-Também possui testes de integração do endpoint
-`POST /api/v1/violations/evaluate` utilizando Spring Boot e MockMvc, cobrindo:
+Também possui testes de integração utilizando Spring Boot e MockMvc, cobrindo:
 
-- cenários com e sem infração;
+- avaliação com e sem infração;
 - validações de placa, velocidades, equipamento e timestamp;
 - validação do header `x-origin`;
 - respostas de erro padronizadas;
-- erros inesperados `500` sem exposição de detalhes internos.
+- erros inesperados `500` sem exposição de detalhes internos;
+- consulta de infrações por placa;
+- retorno de lista vazia quando não existem registros;
+- garantia de que avaliações sem infração não são persistidas.
 
 Para executar todos os testes:
 

@@ -1,5 +1,7 @@
 # Speed Violation Service
 
+[![CI](https://github.com/ViniciusKuchnir/speed-violation-service/actions/workflows/ci.yml/badge.svg)](https://github.com/ViniciusKuchnir/speed-violation-service/actions/workflows/ci.yml)
+
 Microserviço REST responsável por processar leituras de velocidade captadas por
 equipamentos de fiscalização de trânsito, aplicar regras de tolerância e
 identificar possíveis infrações por excesso de velocidade.
